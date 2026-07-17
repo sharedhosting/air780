@@ -10,7 +10,7 @@ return {
                 retry   = 10
             },
             channel = {
-                weCom  = { enable = 1, url = 'https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=cc591cd2-927d-4932-a01b-36a562710041' },
+                wxpusher = { enable = 1, url = 'https://wxpusher.zjiecode.com/api/send/message', appToken = 'AT_xxxxxxxxxxxxxxxx', uids = {'UID_xxxxxxxxxxxxxxxx'} },
                 ntfy   = { enable = 1, url = 'https://ntfy.sh/uUHWKD9-217-218' },
                 bark   = { enable = 1, url = 'https://api.day.app/ADDMksvUGGBPc8znT66Ht6' },
                 gotify = { enable = 1, url = 'http://natde1.net/message?token=AsfsgUIaZNIwDxwQ' }
