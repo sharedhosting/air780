@@ -3,6 +3,16 @@ return {
         dns  = { '180.184.2.2', '223.5.5.5' },
         IPv6 = 0
     },
+    -- 新增定时任务配置
+    task = {
+        keep_alive = {
+            enable  = 1,             -- 1: 开启，0: 关闭
+            number  = '13800000000', -- 接收保活短信的目标手机号
+            days    = 15,            -- 循环发送间隔（天）
+            content = '设备保活短信：系统运行正常' -- 短信内容
+        }
+    },
+    
     notify = {
         http = {
             options = {
@@ -11,9 +21,9 @@ return {
             },
             channel = {
                 wxpusher = { enable = 1, url = 'https://wxpusher.zjiecode.com/api/send/message', appToken = 'AT_xxxxxxxxxxxxxxxx', uids = {'UID_xxxxxxxxxxxxxxxx'} },
-                ntfy   = { enable = 1, url = 'https://ntfy.sh/uUHWKD9-217-218' },
-                bark   = { enable = 1, url = 'https://api.day.app/ADDMksvUGGBPc8znT66Ht6' },
-                gotify = { enable = 1, url = 'http://natde1.net/message?token=AsfsgUIaZNIwDxwQ' }
+                ntfy   = { enable = 1, url = 'https://ntfy.sh/xxxxx' },
+                bark   = { enable = 1, url = 'https://api.day.app/xxxxxxxx' },
+                gotify = { enable = 1, url = 'http://natde1.net/message?token=xxxxxxx' }
             }
         }
     },
