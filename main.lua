@@ -1,5 +1,5 @@
-PROJECT = 'Air780EP_SMS'
-VERSION = '0.3.75'
+PROJECT = 'Air780_SMS'
+VERSION = '0.5.55'
 
 log.setLevel(2)
 log.style(1)
@@ -99,14 +99,13 @@ sys.subscribe('sms_build_call', function(from)
     end
 end)
 
+-- 短信指令控制（已修复：支持任意分隔符，零 Table 垃圾回收）
 sys.subscribe('sms_build_sms', function(from, content)
     if #config.system.ctrl < 1 or ctrl[from] then
-        if not content:find('##', 1, true) then return end
-        local parts = {}
-        for part in content:gmatch('([^##]+)') do table.insert(parts, part) end
-        if #parts > 2 and parts[1]:lower() == 'sms' and tonumber(parts[2]) then
-            local rTxt = content:sub(#parts[1] + #parts[2] + 5) -- 局部变量修复
-            sys.publish('sms_send', parts[2], rTxt)
+        -- 匹配规则：以 SMS/sms 开头，兼容 ##、#、逗号、空格、冒号等任意分隔符
+        local cmd, target, rTxt = content:match('^(%a+)[%s#,:]+(%d+)[%s#,:]+(.+)$')
+        if cmd and cmd:lower() == 'sms' and target and rTxt then
+            sys.publish('sms_send', target, rTxt)
         end
     end
 end)
@@ -123,7 +122,7 @@ sys.subscribe('notify_build', function(type, from, content)
             local fn = params[value]
             if fn then
                 local method, url, headers, body = fn(type, from, num, content)
-                if method and headers then -- 关键防御：只有非 nil 时才赋 User-Agent
+                if method and headers then
                     headers['User-Agent'] = userAgent
                     sys.publish('http_notify', method, url, headers, body, 1)
                 end
