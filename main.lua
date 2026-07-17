@@ -175,4 +175,27 @@ local power = config.system.power
 if power.reboot > 0 then sys.timerStart(pm.reboot, 3600000 * power.reboot) end
 if power.usb ~= 1 then sys.timerStart(pm.power, 120000, pm.USB, false) end
 
+-- 定时保活短信任务（基于 fskv 跨重启持久化累计小时）
+local ka = config.task and config.task.keep_alive
+if ka and ka.enable == 1 and isMobile(ka.number) then
+    sys.taskInit(function()
+        fskv.init()
+        sys.waitUntil('IP_READY') -- 确保 SIM 卡与网络就绪
+
+        -- 每 1 小时计数一次（3600000 ms）
+        sys.timerLoopStart(function()
+            local target_hours = ka.days * 24
+            local run_hours = (fskv.get('ka_hours') or 0) + 1
+
+            if run_hours >= target_hours then
+                log.info('保活任务', '达到设定天数，发送保活短信', ka.number)
+                sys.publish('sms_send', ka.number, ka.content)
+                fskv.set('ka_hours', 0)
+            else
+                fskv.set('ka_hours', run_hours)
+            end
+        end, 3600000)
+    end)
+end
+
 sys.run()
