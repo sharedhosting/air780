@@ -1,10 +1,11 @@
 local params, chl = {}, config.notify.http.channel
 
-function params.weCom(t, f, n, msg)
-    local c = chl.weCom
+function params.wxpusher(t, f, n, msg)
+    local c = chl.wxpusher
     if not c then return end
-    local txt = t == 'call' and (f..'致电'..n) or (t == 'sms' and (f..'发来短信：'..msg..' 收信：'..n) or msg)
-    return 'POST', c.url, {['Content-Type']='application/json; charset=utf-8'}, json.encode({msgtype='text', text={content=txt}})
+    local summary = t == 'call' and ('📞 来电: '..f) or (t == 'sms' and ('📩 短信: '..f) or '⚙️ 系统通知')
+    local content = t == 'call' and string.format('**📞 来电提醒**\n- **主叫**: %s\n- **被叫**: %s', f, n) or (t == 'sms' and string.format('**📩 新短信通知**\n- **发件人**: %s\n- **收件人**: %s\n- **内容**:\n%s', f, n, msg) or ('**⚙️ 系统通知**\n\n'..msg))
+    return 'POST', 'https://wxpusher.zjiecode.com/api/send/message', {['Content-Type']='application/json; charset=utf-8'}, json.encode({appToken=c.appToken, summary=summary, content=content, contentType=3, uids=c.uids, topicIds=c.topicIds})
 end
 
 function params.ntfy(t, f, n, msg)
